@@ -1,6 +1,6 @@
 # Pastel Bouquet
 
-A little fourth-anniversary website: Snoopy holding flowers, a personal love note, and a button that opens a pastel bouquet painting on pink. The painting builds stroke by stroke in **8.566 seconds** and stays on screen. Click, tap, or focus the canvas and press Enter/Space to replay.
+A little fourth-anniversary website: Snoopy holding flowers, CSS pumpkins, a Thanksgiving love note, and a button that opens a pastel bouquet painting on a warm apricot background. The painting builds stroke by stroke in **8.566 seconds** and stays on screen. Click, tap, or focus the canvas and press Enter/Space to replay.
 
 The landing page is `/`; `/#flowers` opens the painting directly. The flower view links back to the note, and browser Back/Forward works between the two. The user-supplied Snoopy image is stored locally, with no external image or font requests.
 
@@ -36,3 +36,5 @@ The Playwright configuration uses installed macOS Google Chrome; change `executa
 See [reference-analysis.md](reference-analysis.md) for timestamp observations, source preparation, confirmed technique versus assumptions, and fidelity limits. The reference is the user-supplied MP4 associated with [@BUILDMERI's Instagram Reel](https://www.instagram.com/reel/DeiSxSLImXB/). The original video and editor interface are excluded. The committed image is a derived artwork reference; no claim is made to ownership of that artwork or to possession of the original photograph. This project does not grant rights to third-party reference art.
 
 Measured build, browser, fidelity and timing results are recorded in [verification-results.md](verification-results.md).
+
+The Thanksgiving palette, layout decisions, source research and contrast checks are documented in [design-notes.md](design-notes.md).

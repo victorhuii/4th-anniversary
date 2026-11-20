@@ -24,3 +24,9 @@ Added the supplied Snoopy illustration, a fourth-anniversary note, and a flower 
 The new desktop (1280 × 1000) and phone (390 × 844) landing screenshots were visually inspected, together with the pink flower view. Snoopy loads from a local asset. Landing-page checks verified no horizontal overflow, image decoding, flower-button navigation and focus restoration on browser Back. Build and five unit tests passed. All four browser checks passed across the initial run and targeted reruns. The latest uninterrupted painting completed in 8,766 ms; the schedule remains 8,566 ms. An earlier local run exceeded the original 8,800 ms timing tolerance; screenshot-overhead timing is now assessed separately from the dedicated uninterrupted check.
 
 Local screenshots: `verification/anniversary-1280.png`, `verification/anniversary-390.png`, and `verification/mobile.png` (flower view).
+
+## Thanksgiving theme
+
+Replaced the pink palette with orange gingham, cream paper, cocoa text and a terracotta action. Added an HTML/CSS pumpkin cluster next to the unchanged Snoopy JPEG and updated the note for Thanksgiving. The painting's surround is apricot; the stroke engine is unchanged. No image-generation tools were used.
+
+Production build and five unit tests passed. Targeted Playwright checks passed for mobile painting layout/touch replay and anniversary navigation on desktop/mobile. Both new landing screenshots were visually inspected. Primary text/button color-pair contrast calculations exceed 4.5:1; research and exact ratios appear in `design-notes.md`.
