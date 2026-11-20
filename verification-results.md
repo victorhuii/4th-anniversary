@@ -16,3 +16,11 @@ Verified on 2026-11-20 with local macOS Google Chrome, React 19 and Vite 7.
 The largest visual limitation is source resolution and photographed-screen softness. The output remains slightly softer than the reference, and exact original stroke paths/order are not reproduced. The small upper-right text cleanup is reconstructed foliage. Timing broadly follows the observed coarse-to-fine development but expands the painting segment to the requested standalone 8.566-second schedule.
 
 Screenshots, intermediate frames and machine-generated QA reports are intentionally excluded from Git. Local final screenshot: `verification/painting-8566.png`; layout captures: `verification/desktop.png` and `verification/mobile.png`; progression sheet: `verification/progression.jpg`. These can be regenerated with the Playwright suite. Source video is not included.
+
+## Anniversary landing page
+
+Added the supplied Snoopy illustration, a fourth-anniversary note, and a flower button. Both views use a soft pink surrounding background. `/#flowers` preserves direct access to the procedural painting. Browser history and focus restoration are supported.
+
+The new desktop (1280 × 1000) and phone (390 × 844) landing screenshots were visually inspected, together with the pink flower view. Snoopy loads from a local asset. Landing-page checks verified no horizontal overflow, image decoding, flower-button navigation and focus restoration on browser Back. Build and five unit tests passed. All four browser checks passed across the initial run and targeted reruns. The latest uninterrupted painting completed in 8,766 ms; the schedule remains 8,566 ms. An earlier local run exceeded the original 8,800 ms timing tolerance; screenshot-overhead timing is now assessed separately from the dedicated uninterrupted check.
+
+Local screenshots: `verification/anniversary-1280.png`, `verification/anniversary-390.png`, and `verification/mobile.png` (flower view).

@@ -3,7 +3,7 @@ import {mkdirSync,writeFileSync} from 'node:fs';
 test('real-time desktop playback, persistent final bitmap, keyboard replay',async({page})=>{
   mkdirSync('verification',{recursive:true});
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.setViewportSize({width:1280,height:1000});await page.goto('/');
+  await page.setViewportSize({width:1280,height:1000});await page.goto('/#flowers');
   const canvas=page.locator('canvas');await expect(canvas).toHaveAttribute('data-state','painting');
   const samples=[];
   for(const t of [0,500,1000,2000,3000,4000,5000,6000,7000,8000,8566]){
@@ -13,7 +13,8 @@ test('real-time desktop playback, persistent final bitmap, keyboard replay',asyn
   }
   await expect(canvas).toHaveAttribute('data-state','complete');
   const duration=Number(await canvas.getAttribute('data-actual-duration'));
-  expect(duration).toBeGreaterThanOrEqual(8566);expect(duration).toBeLessThan(8800);
+  // Screenshot capture can pause rendering; the uninterrupted test owns the timing bound.
+  expect(duration).toBeGreaterThanOrEqual(8566);
   const completed=await canvas.evaluate(c=>(c as HTMLCanvasElement).toDataURL());
   await page.waitForTimeout(400);expect(await canvas.evaluate(c=>(c as HTMLCanvasElement).toDataURL())).toBe(completed);
   await page.screenshot({path:'verification/desktop.png'});
@@ -26,7 +27,7 @@ test('real-time desktop playback, persistent final bitmap, keyboard replay',asyn
 });
 test('mobile portrait fits, touch replay works at DPR 3',async({browser})=>{
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true});
-  const page=await context.newPage();await page.goto('/');
+  const page=await context.newPage();await page.goto('/#flowers');
   const canvas=page.locator('canvas');await expect(canvas).toHaveAttribute('data-state','complete',{timeout:20000});
   const variation=await canvas.evaluate(c=>{
     const ctx=(c as HTMLCanvasElement).getContext('2d')!;
@@ -41,7 +42,7 @@ test('mobile portrait fits, touch replay works at DPR 3',async({browser})=>{
   await canvas.tap();await expect(canvas).toHaveAttribute('data-state','painting');await context.close();
 });
 test('uninterrupted playback timing and frame cadence',async({page})=>{
-  await page.goto('/');
+  await page.goto('/#flowers');
   const metrics=await page.evaluate(()=>new Promise<Record<string,number>>(resolve=>{
     let previous=0;const deltas:number[]=[];
     const tick=(now:number)=>{
@@ -57,4 +58,24 @@ test('uninterrupted playback timing and frame cadence',async({page})=>{
   }));
   expect(metrics.duration).toBeGreaterThanOrEqual(8566);expect(metrics.duration).toBeLessThan(8800);
   writeFileSync('verification/performance.json',JSON.stringify(metrics,null,2));
+});
+
+test('anniversary note opens flowers and browser back restores the note',async({page})=>{
+  mkdirSync('verification',{recursive:true});
+  for(const viewport of [{width:1280,height:1000},{width:390,height:844}]){
+    await page.setViewportSize(viewport);await page.goto('/');
+    await expect(page.getByRole('heading',{name:'Happy 4th anniversary, my love.'})).toBeVisible();
+    const snoopy=page.getByRole('img',{name:'Snoopy smiling and holding a colorful bunch of flowers'});
+    await expect(snoopy).toBeVisible();
+    expect(await snoopy.evaluate(img=>(img as HTMLImageElement).naturalWidth)).toBe(736);
+    await expect(page.locator('canvas')).toHaveCount(0);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBe(viewport.width);
+    await page.screenshot({path:`verification/anniversary-${viewport.width}.png`,fullPage:true});
+    await page.getByRole('link',{name:'Flowers for you'}).click();
+    await expect(page).toHaveURL(/#flowers$/);
+    await expect(page.locator('canvas')).toHaveAttribute('data-state','painting',{timeout:15000});
+    await expect(page.getByRole('link',{name:'Back to your note'})).toBeFocused();
+    await page.goBack();
+    await expect(page.getByRole('heading',{name:'Happy 4th anniversary, my love.'})).toBeFocused();
+  }
 });

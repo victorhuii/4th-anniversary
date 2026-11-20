@@ -8,7 +8,7 @@ export function PastelCanvas(){
     painting.prepare().catch(()=>setError(true));return()=>painting.dispose();
   },[]);
   const replay=()=>{if(renderer.current?.finished){setFinished(false);renderer.current.play();}};
-  return <main aria-label="Pastel bouquet painting">
+  return <main className="painting-stage" aria-label="Pastel bouquet painting">
     <canvas ref={canvas} width={630} height={900} role="button" tabIndex={0}
       aria-label={finished?'Finished pastel bouquet. Activate to paint again.':'A pastel bouquet being painted, stroke by stroke.'}
       aria-disabled={!finished} onClick={replay} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();replay();}}}/>
