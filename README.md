@@ -1,0 +1,36 @@
+# Pastel Bouquet
+
+A minimal React / TypeScript / Canvas 2D painting that builds a pastel bouquet stroke by stroke in **8.566 seconds**. The final artwork remains on screen. Click, tap, or focus the canvas and press Enter/Space to replay.
+
+## Run
+
+```sh
+npm install
+npm run dev
+```
+
+Open the local URL printed by Vite. To build and serve the production bundle:
+
+```sh
+npm run build
+npm run preview
+```
+
+## Rendering
+
+A perspective-corrected crop of the user-supplied reference video supplies local colors. Gaussian luminance and structure-tensor gradients orient deterministic marks along the image contours. Four progressively smaller brush passes establish color masses, forms, petals and fine texture. Procedural alpha masks create irregular pigment edges, grain gaps and dry scratches; colored sprites are reused. Approximately 280,000 strokes accumulate on the canvas. The source is sampled offscreen and is never drawn onto the visible canvas.
+
+`requestAnimationFrame` advances a precomputed timestamped sequence against elapsed time. Delayed frames consume all pending marks, including every remaining mark at completion, rather than extending the animation. Playback stops requesting frames at completion. Device pixel ratio is capped at 2 to bound memory; the layout preserves the complete portrait on desktop and mobile. React updates only for completion/error state.
+
+## Verification
+
+```sh
+npm test
+npm run test:e2e
+```
+
+The Playwright configuration uses installed macOS Google Chrome; change `executablePath` for another platform or install Playwright Chromium and omit that option. The end-to-end tests capture intermediate canvases, record real playback duration, compare replay pixel data, verify retained completion, check keyboard/touch activation and mobile bounds, and reject browser exceptions. Temporary screenshots and reports are ignored by Git. Unit tests cover orientation, convolution, seeded noise and delayed-frame catch-up.
+
+See [reference-analysis.md](reference-analysis.md) for timestamp observations, source preparation, confirmed technique versus assumptions, and fidelity limits. The reference is the user-supplied MP4 associated with [@BUILDMERI's Instagram Reel](https://www.instagram.com/reel/DeiSxSLImXB/). The original video and editor interface are excluded. The committed image is a derived artwork reference; no claim is made to ownership of that artwork or to possession of the original photograph. This project does not grant rights to third-party reference art.
+
+Measured build, browser, fidelity and timing results are recorded in [verification-results.md](verification-results.md).
