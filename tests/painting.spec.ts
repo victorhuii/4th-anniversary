@@ -79,3 +79,25 @@ test('anniversary note opens flowers and browser back restores the note',async({
     await expect(page.getByRole('heading',{name:'Happy 4th anniversary, my love.'})).toBeFocused();
   }
 });
+test('flowers prepare in the background and open promptly on repeat visits',async({page})=>{
+  const workerFinished=page.waitForEvent('worker').then(worker=>worker.waitForEvent('close'));
+  await page.goto('/');
+  await expect(page.getByRole('heading',{name:'Happy 4th anniversary, my love.'})).toBeVisible();
+  await workerFinished;
+  await expect(page.getByRole('link',{name:'Flowers for you'})).toHaveAttribute('data-flowers-ready','true',{timeout:15000});
+  const latencies:number[]=[];
+  for(let visit=0;visit<2;visit++){
+    await page.getByRole('link',{name:'Flowers for you'}).evaluate(button=>button.addEventListener('click',()=>{
+      sessionStorage.setItem('flowerClickStart',String(performance.now()));
+    },{once:true}));
+    await page.getByRole('link',{name:'Flowers for you'}).click();
+    await page.waitForFunction(()=>Number(document.querySelector('canvas')?.getAttribute('data-strokes'))>0);
+    latencies.push(await page.evaluate(()=>performance.now()-Number(sessionStorage.getItem('flowerClickStart'))));
+    await expect(page.getByRole('status')).toHaveCount(0);
+    await page.getByRole('link',{name:'Back to your note'}).click();
+  }
+  expect(latencies[0]).toBeLessThan(700);
+  expect(latencies[1]).toBeLessThan(700);
+  mkdirSync('verification',{recursive:true});
+  writeFileSync('verification/startup.json',JSON.stringify({warmClickToFirstStrokeMs:latencies},null,2));
+});

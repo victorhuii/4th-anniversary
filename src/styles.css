@@ -123,3 +123,4 @@ h1 em { font-weight: 400; color: var(--orange); }
   .flowers-signature { font-size: 14px; }
 }
 @media(prefers-reduced-motion: reduce) { .flowers-button { transition: none; } }
+.preparing-note { position: absolute; margin: 0; padding: 8px 12px; color: #fff9eb; font: italic 18px/1.5 Georgia, serif; }

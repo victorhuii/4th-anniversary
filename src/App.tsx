@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {PastelCanvas} from './components/PastelCanvas';
+import {preparePainting} from './engine/PreparedPainting';
 
 function Heart({className=''}:{className?:string}) {
   return <svg className={className} viewBox="0 0 40 36" fill="none" aria-hidden="true"><path d="M20 32C15 28 3 20 3 11 3 2 15 1 20 10 25 0 37 3 37 12 37 20 26 29 20 32Z" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
@@ -17,8 +18,17 @@ function Flower() {
 }
 export default function App(){
   const [flowers,setFlowers]=useState(()=>window.location.hash==='#flowers');
+  const [flowersReady,setFlowersReady]=useState(false);
   const title=useRef<HTMLHeadingElement>(null),back=useRef<HTMLAnchorElement>(null);
   const navigated=useRef(false);
+  useEffect(()=>{
+    // Let the letter paint first, then prepare the flowers while it is being read.
+    let active=true;
+    const task=setTimeout(()=>{
+      void preparePainting().then(()=>{if(active)setFlowersReady(true);}).catch(()=>{});
+    },0);
+    return()=>{active=false;clearTimeout(task);};
+  },[]);
   useEffect(()=>{
     const change=()=>{navigated.current=true;setFlowers(window.location.hash==='#flowers');window.scrollTo(0,0);};
     window.addEventListener('hashchange',change);return()=>window.removeEventListener('hashchange',change);
@@ -50,7 +60,7 @@ export default function App(){
             <p>Four years in, and I’d still pick you. Every time.</p>
           </div>
           <p className="sign-off">i love you. always.</p>
-          <a className="flowers-button" href="#flowers">Flowers for you <Flower/></a>
+          <a className="flowers-button" data-flowers-ready={flowersReady} href="#flowers">Flowers for you <Flower/></a>
         </div>
       </div>
       <footer className="letter-footer"><span>thankful for us</span><span>this season & every season.</span></footer>

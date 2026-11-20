@@ -22,7 +22,11 @@ npm run preview
 
 A perspective-corrected crop of the user-supplied reference video supplies local colors. Gaussian luminance and structure-tensor gradients orient deterministic marks along the image contours. Four progressively smaller brush passes establish color masses, forms, petals and fine texture. Procedural alpha masks create irregular pigment edges, grain gaps and dry scratches; colored sprites are reused. Approximately 280,000 strokes accumulate on the canvas. The source is sampled offscreen and is never drawn onto the visible canvas.
 
-`requestAnimationFrame` advances a precomputed timestamped sequence against elapsed time. Delayed frames consume all pending marks, including every remaining mark at completion, rather than extending the animation. Playback stops requesting frames at completion. Device pixel ratio is capped at 2 to bound memory; the layout preserves the complete portrait on desktop and mobile. React updates only for completion/error state.
+`requestAnimationFrame` advances a precomputed timestamped sequence against elapsed time. Delayed frames consume all pending marks, including every remaining mark at completion, rather than extending the animation. Playback stops requesting frames at completion. Device pixel ratio is capped at 2 to bound memory; the layout preserves the complete portrait on desktop and mobile. React updates only for readiness, completion and error state.
+
+## Fast flower startup
+
+The landing page starts preparing the painting in the background. Gaussian analysis and generation of the deterministic stroke sequence run in a module Web Worker. The page shares that preparation across navigation, so returning to the flowers does not repeat it. Brush textures warm in short, yielding batches before playback so cache creation does not cause animation stalls. A brief “Picking your flowers…” message covers an immediate click or direct visit before preparation completes. The artwork still paints through actual strokes on the same 8.566-second timeline.
 
 ## Verification
 

@@ -30,3 +30,9 @@ Local screenshots: `verification/anniversary-1280.png`, `verification/anniversar
 Replaced the pink palette with orange gingham, cream paper, cocoa text and a terracotta action. Added an HTML/CSS pumpkin cluster next to the unchanged Snoopy JPEG and updated the note for Thanksgiving. The painting's surround is apricot; the stroke engine is unchanged. No image-generation tools were used.
 
 Production build and five unit tests passed. Targeted Playwright checks passed for mobile painting layout/touch replay and anniversary navigation on desktop/mobile. Both new landing screenshots were visually inspected. Primary text/button color-pair contrast calculations exceed 4.5:1; research and exact ratios appear in `design-notes.md`.
+
+## Flower startup improvement
+
+Moved Gaussian/gradient analysis and stroke generation into a Vite-bundled module worker. Preparation starts after the anniversary note mounts, is shared across navigation, and retries after errors. Brush atlas creation yields in short message-task batches and completes before playback, preserving the existing texture/stroke sequence. A short preparation status covers direct visits or clicks before the cache is ready.
+
+Build and five unit tests passed. All five browser checks passed across the full run and targeted reruns. After background preparation completed, actual click-event-to-first-drawn-stroke checks measured 60.6 ms on the first visit and 47.8 ms on a return visit. These exclude the initial background preparation period and are local measurements rather than device guarantees. The latest uninterrupted playback completed in 8,760.3 ms against the unchanged 8,566 ms schedule; median frame interval was 16.7 ms and p95 was 33.3 ms, with an occasional longer frame. The existing narrow wall-clock check exceeded its tolerance on an earlier run and passed on rerun. Desktop replay equality, mobile touch/layout and browser navigation checks passed.

@@ -52,8 +52,22 @@ export class BrushEngine {
     }
     return sprite;
   }
-  prepare(strokes:PastelStroke[]) {
-    for(const stroke of strokes)this.pigment(stroke.color,stroke.textureSeed);
+  async prepareAsync(strokes:PastelStroke[]) {
+    let cursor=0;
+    // Message tasks yield to input/rendering without nested setTimeout's 4ms clamp.
+    const channel=new MessageChannel();
+    let resume:()=>void=()=>{};
+    channel.port1.onmessage=()=>resume();
+    try {
+      while(cursor<strokes.length) {
+        await new Promise<void>(resolve=>{resume=resolve;channel.port2.postMessage(null);});
+        const deadline=performance.now()+4;
+        do {
+          const stroke=strokes[cursor++];
+          this.pigment(stroke.color,stroke.textureSeed);
+        } while(cursor<strokes.length && performance.now()<deadline);
+      }
+    } finally {channel.port1.close();channel.port2.close();}
   }
   paint(ctx:CanvasRenderingContext2D,s:PastelStroke,scale:number) {
     const cos=Math.cos(s.angle)*scale,sin=Math.sin(s.angle)*scale;

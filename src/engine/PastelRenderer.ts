@@ -1,22 +1,21 @@
-import {loadImageField} from './ImageProcessor';
-import {generateStrokes,WIDTH,HEIGHT,DURATION} from './StrokeGenerator';
+import {preparePainting} from './PreparedPainting';
+import {WIDTH,HEIGHT,DURATION} from './StrokeGenerator';
 import {BrushEngine} from './BrushEngine';
 import {AnimationController} from './AnimationController';
 export class PastelRenderer {
-  private frame=0;private brush=new BrushEngine();private controller?:AnimationController;
+  private frame=0;private brush?:BrushEngine;private controller?:AnimationController;
   private start=0;private disposed=false;private scale=1;
   finished=false;
   constructor(private canvas:HTMLCanvasElement,private onFinish:()=>void){}
   async prepare(){
-    const pixels=await loadImageField('/assets/source/bouquet.png',WIDTH,HEIGHT);
+    const {strokes,brush}=await preparePainting();
     if(this.disposed)return;
-    const strokes=generateStrokes(pixels);
-    this.brush.prepare(strokes);
+    this.brush=brush;
     // Supersample within a bounded memory budget; normalized stroke geometry is device-independent.
     this.scale=Math.min(2,Math.max(1,devicePixelRatio));
     this.canvas.width=Math.round(WIDTH*this.scale);this.canvas.height=Math.round(HEIGHT*this.scale);
     const ctx=this.canvas.getContext('2d',{alpha:false})!;
-    this.controller=new AnimationController(strokes,s=>this.brush.paint(ctx,s,this.scale));
+    this.controller=new AnimationController(strokes,s=>brush.paint(ctx,s,this.scale));
     this.play();
   }
   play(){
@@ -37,5 +36,5 @@ export class PastelRenderer {
     };
     this.frame=requestAnimationFrame(tick);
   }
-  dispose(){this.disposed=true;cancelAnimationFrame(this.frame);this.brush.dispose();}
+  dispose(){this.disposed=true;cancelAnimationFrame(this.frame);this.brush=undefined;this.controller=undefined;}
 }
