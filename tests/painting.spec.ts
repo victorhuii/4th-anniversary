@@ -64,7 +64,7 @@ test('anniversary note opens flowers and browser back restores the note',async({
   mkdirSync('verification',{recursive:true});
   for(const viewport of [{width:1280,height:1000},{width:390,height:844}]){
     await page.setViewportSize(viewport);await page.goto('/');
-    await expect(page.getByRole('heading',{name:'Happy 4th anniversary, my love.'})).toBeVisible();
+    await expect(page.getByRole('heading',{name:'Happy four months, my love.'})).toBeVisible();
     const snoopy=page.getByRole('img',{name:'Snoopy smiling and holding a colorful bunch of flowers'});
     await expect(snoopy).toBeVisible();
     expect(await snoopy.evaluate(img=>(img as HTMLImageElement).naturalWidth)).toBe(736);
@@ -76,13 +76,13 @@ test('anniversary note opens flowers and browser back restores the note',async({
     await expect(page.locator('canvas')).toHaveAttribute('data-state','painting',{timeout:15000});
     await expect(page.getByRole('link',{name:'Back to your note'})).toBeFocused();
     await page.goBack();
-    await expect(page.getByRole('heading',{name:'Happy 4th anniversary, my love.'})).toBeFocused();
+    await expect(page.getByRole('heading',{name:'Happy four months, my love.'})).toBeFocused();
   }
 });
 test('flowers prepare in the background and open promptly on repeat visits',async({page})=>{
   const workerFinished=page.waitForEvent('worker').then(worker=>worker.waitForEvent('close'));
   await page.goto('/');
-  await expect(page.getByRole('heading',{name:'Happy 4th anniversary, my love.'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Happy four months, my love.'})).toBeVisible();
   await workerFinished;
   await expect(page.getByRole('link',{name:'Flowers for you'})).toHaveAttribute('data-flowers-ready','true',{timeout:15000});
   const latencies:number[]=[];

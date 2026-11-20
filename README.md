@@ -1,6 +1,6 @@
 # Pastel Bouquet
 
-A little fourth-anniversary website: Snoopy holding flowers, CSS pumpkins, a Thanksgiving love note, and a button that opens a pastel bouquet painting on a warm apricot background. The painting builds stroke by stroke in **8.566 seconds** and stays on screen. Click, tap, or focus the canvas and press Enter/Space to replay.
+A little four-month anniversary website: Snoopy holding flowers, CSS pumpkins, a Thanksgiving love note, and a button that opens a pastel bouquet painting on a warm apricot background. The painting builds stroke by stroke in **8.566 seconds** and stays on screen. Click, tap, or focus the canvas and press Enter/Space to replay.
 
 The landing page is `/`; `/#flowers` opens the painting directly. The flower view links back to the note, and browser Back/Forward works between the two. The user-supplied Snoopy image is stored locally, with no external image or font requests.
 

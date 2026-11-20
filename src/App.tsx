@@ -34,7 +34,7 @@ export default function App(){
     window.addEventListener('hashchange',change);return()=>window.removeEventListener('hashchange',change);
   },[]);
   useEffect(()=>{
-    document.title=flowers?'Flowers for you · Happy 4th anniversary':'Happy 4th anniversary, my love';
+    document.title=flowers?'Flowers for you · Happy four months':'Happy four months, my love';
     if(navigated.current)(flowers?back.current:title.current)?.focus({preventScroll:true});
   },[flowers]);
   if(flowers)return <div className="flowers-page">
@@ -44,7 +44,7 @@ export default function App(){
   </div>;
   return <main className="anniversary-page">
     <article className="love-letter" aria-labelledby="anniversary-title">
-      <header className="letter-header"><span>four years, forever thankful</span><Heart/></header>
+      <header className="letter-header"><span>four months, forever thankful</span><Heart/></header>
       <div className="letter-body">
         <figure className="snoopy-portrait">
           <div className="snoopy-image"><img src="/assets/snoopy-flowers.jpeg" width="736" height="736" alt="Snoopy smiling and holding a colorful bunch of flowers" fetchPriority="high"/></div>
@@ -53,11 +53,11 @@ export default function App(){
           <Heart className="portrait-heart"/>
         </figure>
         <div className="letter-copy">
-          <h1 ref={title} tabIndex={-1} id="anniversary-title">Happy 4th<br/><em>anniversary,</em><br/>my love.</h1>
+          <h1 ref={title} tabIndex={-1} id="anniversary-title">Happy four<br/><em>months,</em><br/>my love.</h1>
           <div className="note">
             <p>This Thanksgiving, I’m extra thankful for you. For being here with me through the big days, the quiet days, and all the wonderfully uneventful ones in between.</p>
             <p>Thank you for dilly-dallying with me, for making the little things feel like something, and for being my favorite person to do absolutely nothing with.</p>
-            <p>Four years in, and I’d still pick you. Every time.</p>
+            <p>Four months in, and I’d still pick you. Every time.</p>
           </div>
           <p className="sign-off">i love you. always.</p>
           <a className="flowers-button" data-flowers-ready={flowersReady} href="#flowers">Flowers for you <Flower/></a>
