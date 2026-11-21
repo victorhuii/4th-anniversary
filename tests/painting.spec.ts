@@ -3,7 +3,7 @@ import {mkdirSync,writeFileSync} from 'node:fs';
 test('real-time desktop playback, persistent final bitmap, keyboard replay',async({page})=>{
   mkdirSync('verification',{recursive:true});
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
-  await page.setViewportSize({width:1280,height:1000});await page.goto('/#flowers');
+  await page.setViewportSize({width:1280,height:1000});await page.goto('/');await page.getByRole('link',{name:'Flowers for you'}).click();
   const canvas=page.locator('canvas');await expect(canvas).toHaveAttribute('data-state','painting');
   const samples=[];
   for(const t of [0,500,1000,2000,3000,4000,5000,6000,7000,8000,8566]){
@@ -27,7 +27,7 @@ test('real-time desktop playback, persistent final bitmap, keyboard replay',asyn
 });
 test('mobile portrait fits, touch replay works at DPR 3',async({browser})=>{
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true});
-  const page=await context.newPage();await page.goto('/#flowers');
+  const page=await context.newPage();await page.goto('/');await page.getByRole('link',{name:'Flowers for you'}).click();
   const canvas=page.locator('canvas');await expect(canvas).toHaveAttribute('data-state','complete',{timeout:20000});
   const variation=await canvas.evaluate(c=>{
     const ctx=(c as HTMLCanvasElement).getContext('2d')!;
@@ -42,7 +42,7 @@ test('mobile portrait fits, touch replay works at DPR 3',async({browser})=>{
   await canvas.tap();await expect(canvas).toHaveAttribute('data-state','painting');await context.close();
 });
 test('uninterrupted playback timing and frame cadence',async({page})=>{
-  await page.goto('/#flowers');
+  await page.goto('/');await page.getByRole('link',{name:'Flowers for you'}).click();
   const metrics=await page.evaluate(()=>new Promise<Record<string,number>>(resolve=>{
     let previous=0;const deltas:number[]=[];
     const tick=(now:number)=>{
@@ -100,4 +100,16 @@ test('flowers prepare in the background and open promptly on repeat visits',asyn
   expect(latencies[1]).toBeLessThan(700);
   mkdirSync('verification',{recursive:true});
   writeFileSync('verification/startup.json',JSON.stringify({warmClickToFirstStrokeMs:latencies},null,2));
+});
+
+test('saved flower links and reloads always open the note first',async({page})=>{
+  await page.goto('/#flowers');
+  await expect(page.getByRole('heading',{name:'Happy four months, my love.'})).toBeVisible();
+  await expect(page.locator('canvas')).toHaveCount(0);
+  await expect(page).not.toHaveURL(/#flowers$/);
+  await page.getByRole('link',{name:'Flowers for you'}).click();
+  await expect(page.locator('canvas')).toBeVisible();
+  await page.reload();
+  await expect(page.getByRole('heading',{name:'Happy four months, my love.'})).toBeVisible();
+  await expect(page.locator('canvas')).toHaveCount(0);
 });

@@ -1,13 +1,13 @@
-import {DURATION,type PastelStroke} from './StrokeGenerator';
+import {DURATION} from './StrokeGenerator';
 export class AnimationController {
   private cursor=0;
-  constructor(private strokes:PastelStroke[],private draw:(stroke:PastelStroke)=>void){}
+  constructor(private times:ArrayLike<number>,private draw:(index:number)=>void){}
   reset(){this.cursor=0;}
   advance(elapsed:number) {
     const time=Math.max(0,Math.min(DURATION,elapsed));
-    while(this.cursor<this.strokes.length && this.strokes[this.cursor].scheduledTime<=time) this.draw(this.strokes[this.cursor++]);
+    while(this.cursor<this.times.length && this.times[this.cursor]<=time) this.draw(this.cursor++);
     return time>=DURATION;
   }
   get count(){return this.cursor;}
-  get total(){return this.strokes.length;}
+  get total(){return this.times.length;}
 }

@@ -20,7 +20,7 @@ describe('deterministic playback',()=>{
   });
   it('catches up after a stalled frame and replays exactly once per stroke',()=>{
     const strokes=[0,100,200,DURATION].map(scheduledTime=>({scheduledTime} as PastelStroke));
-    const drawn:number[]=[];const animation=new AnimationController(strokes,s=>drawn.push(s.scheduledTime));
+    const drawn:number[]=[];const animation=new AnimationController(strokes.map(s=>s.scheduledTime),index=>drawn.push(strokes[index].scheduledTime));
     expect(animation.advance(-10)).toBe(false);expect(drawn).toEqual([0]);
     animation.advance(150);expect(drawn).toEqual([0,100]);
     expect(animation.advance(15000)).toBe(true);expect(drawn).toEqual([0,100,200,DURATION]);
@@ -38,5 +38,21 @@ describe('full-resolution stroke generation',()=>{
     expect(strokes[0].scheduledTime).toBe(0);
     expect(strokes.at(-1)!.scheduledTime).toBe(DURATION);
     for(let i=1;i<strokes.length;i++)if(strokes[i].scheduledTime<strokes[i-1].scheduledTime)throw new Error('Unsorted stroke schedule');
+  });
+});
+
+describe('lossless playback buffers',()=>{
+  it('retains exact coordinates, opacity, color, timing and trigonometry',async()=>{
+    const {packStrokes,GEOMETRY_STRIDE}=await import('../src/engine/PackedStrokes');
+    const strokes=Array.from({length:3},(_,i)=>({x:21.123456789+i,y:42.987654321-i,width:1.900000003,length:3.412345678,angle:.123456789+i,color:i===1?'16,24,32':'8,16,24',opacity:.912345678,textureSeed:i,layer:i,scheduledTime:i*123.456789}));
+    const packed=packStrokes(strokes);
+    for(let i=0;i<strokes.length;i++){
+      const s=strokes[i];
+      expect([...packed.geometry.slice(i*GEOMETRY_STRIDE,(i+1)*GEOMETRY_STRIDE)]).toEqual([s.x,s.y,s.width,s.length,Math.cos(s.angle),Math.sin(s.angle),s.opacity]);
+      expect(packed.times[i]).toBe(s.scheduledTime);
+      expect(packed.colors[packed.pigments[i]]).toBe(s.color);
+      expect(packed.textures[i]).toBe(s.textureSeed);
+    }
+    expect(packed.colors.length).toBe(2);
   });
 });

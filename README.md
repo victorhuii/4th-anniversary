@@ -2,7 +2,7 @@
 
 A little four-month anniversary website: Snoopy holding flowers, CSS pumpkins, a Thanksgiving love note, and a button that opens a pastel bouquet painting on a warm apricot background. The painting builds stroke by stroke in **8.566 seconds** and stays on screen. Click, tap, or focus the canvas and press Enter/Space to replay.
 
-The landing page is `/`; `/#flowers` opens the painting directly. The flower view links back to the note, and browser Back/Forward works between the two. The user-supplied Snoopy image is stored locally, with no external image or font requests.
+Fresh visits and reloads always open the note, even if the URL still contains `#flowers`. The flower button opens the painting within the current visit. The flower view links back to the note, and browser Back/Forward works between the two. The user-supplied Snoopy image is stored locally, with no external image or font requests.
 
 ## Run
 
@@ -26,7 +26,7 @@ A perspective-corrected crop of the user-supplied reference video supplies local
 
 ## Fast flower startup
 
-The landing page starts preparing the painting in the background. Gaussian analysis and generation of the deterministic stroke sequence run in a module Web Worker. The page shares that preparation across navigation, so returning to the flowers does not repeat it. Brush textures warm in short, yielding batches before playback so cache creation does not cause animation stalls. A brief “Picking your flowers…” message covers an immediate click or direct visit before preparation completes. The artwork still paints through actual strokes on the same 8.566-second timeline.
+The landing page starts preparing the painting in the background. Gaussian analysis and generation of the deterministic stroke sequence run in a module Web Worker. The worker transfers full-precision typed buffers and an exact color dictionary rather than cloning hundreds of thousands of stroke objects. Trigonometry and brush lookup are prepared ahead of playback; rendering uses indexed data while retaining every stroke, texture, color and the same canvas resolution. The page shares that preparation across navigation, so returning to the flowers does not repeat it. Brush textures warm in short, yielding batches before playback so cache creation does not cause animation stalls. A brief “Picking your flowers…” message covers an immediate click or direct visit before preparation completes. The artwork still paints through actual strokes on the same 8.566-second timeline.
 
 ## Verification
 

@@ -1,8 +1,11 @@
 import {seededRandom} from './random';
-import type {PastelStroke} from './StrokeGenerator';
+import {GEOMETRY_STRIDE,type PackedStrokes} from './PackedStrokes';
+interface PigmentSprite {page:HTMLCanvasElement;x:number;y:number}
 export class BrushEngine {
   private masks:HTMLCanvasElement[]=[];
-  private pigments=new Map<string,{page:HTMLCanvasElement;x:number;y:number}>();
+  private pigments=new Map<string,PigmentSprite>();
+  private sprites:PigmentSprite[]=[];
+  private data?:PackedStrokes;
   private atlases:HTMLCanvasElement[]=[];
   private scratch=document.createElement('canvas');
   private scratchContext:CanvasRenderingContext2D;
@@ -52,29 +55,33 @@ export class BrushEngine {
     }
     return sprite;
   }
-  async prepareAsync(strokes:PastelStroke[]) {
+  async prepareAsync(strokes:PackedStrokes) {
+    this.data=strokes;
     let cursor=0;
     // Message tasks yield to input/rendering without nested setTimeout's 4ms clamp.
     const channel=new MessageChannel();
     let resume:()=>void=()=>{};
     channel.port1.onmessage=()=>resume();
     try {
-      while(cursor<strokes.length) {
+      while(cursor<strokes.times.length) {
         await new Promise<void>(resolve=>{resume=resolve;channel.port2.postMessage(null);});
         const deadline=performance.now()+4;
         do {
-          const stroke=strokes[cursor++];
-          this.pigment(stroke.color,stroke.textureSeed);
-        } while(cursor<strokes.length && performance.now()<deadline);
+          const color=strokes.pigments[cursor],texture=strokes.textures[cursor];
+          const slot=color*8+texture;
+          if(!this.sprites[slot])this.sprites[slot]=this.pigment(strokes.colors[color],texture);
+          cursor++;
+        } while(cursor<strokes.times.length && performance.now()<deadline);
       }
     } finally {channel.port1.close();channel.port2.close();}
   }
-  paint(ctx:CanvasRenderingContext2D,s:PastelStroke,scale:number) {
-    const cos=Math.cos(s.angle)*scale,sin=Math.sin(s.angle)*scale;
-    ctx.setTransform(cos,sin,-sin,cos,s.x*scale,s.y*scale);
-    ctx.globalAlpha=s.opacity;
-    const sprite=this.pigment(s.color,s.textureSeed);
-    ctx.drawImage(sprite.page,sprite.x,sprite.y,48,24,-s.length/2,-s.width/2,s.length,s.width);
+  paint(ctx:CanvasRenderingContext2D,index:number,scale:number) {
+    const data=this.data!,g=data.geometry,o=index*GEOMETRY_STRIDE;
+    const cos=g[o+4]*scale,sin=g[o+5]*scale;
+    ctx.setTransform(cos,sin,-sin,cos,g[o]*scale,g[o+1]*scale);
+    ctx.globalAlpha=g[o+6];
+    const sprite=this.sprites[data.pigments[index]*8+data.textures[index]];
+    ctx.drawImage(sprite.page,sprite.x,sprite.y,48,24,-g[o+3]/2,-g[o+2]/2,g[o+3],g[o+2]);
   }
-  dispose(){this.pigments.clear();this.masks=[];this.atlases=[];}
+  dispose(){this.pigments.clear();this.masks=[];this.atlases=[];this.sprites=[];this.data=undefined;}
 }

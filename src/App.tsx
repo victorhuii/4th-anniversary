@@ -17,11 +17,13 @@ function Flower() {
   return <svg viewBox="0 0 28 28" fill="none" aria-hidden="true"><path d="M14 9C7-1 2 8 9 13 0 16 6 25 12 19 15 29 24 22 19 16 29 14 23 5 17 10 20 1 10 0 14 9Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/><circle cx="14" cy="14" r="3" stroke="currentColor" strokeWidth="1.5"/></svg>;
 }
 export default function App(){
-  const [flowers,setFlowers]=useState(()=>window.location.hash==='#flowers');
+  const [flowers,setFlowers]=useState(false);
   const [flowersReady,setFlowersReady]=useState(false);
   const title=useRef<HTMLHeadingElement>(null),back=useRef<HTMLAnchorElement>(null);
   const navigated=useRef(false);
   useEffect(()=>{
+    // Fresh visits and reloads always open the note, including a saved flower URL.
+    if(window.location.hash==='#flowers')window.history.replaceState(window.history.state,'',window.location.pathname+window.location.search);
     // Let the letter paint first, then prepare the flowers while it is being read.
     let active=true;
     const task=setTimeout(()=>{
