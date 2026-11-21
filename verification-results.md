@@ -48,3 +48,9 @@ A baseline and optimized render were captured at a 390 × 844 phone viewport, de
 In Chrome phone emulation, the measured p95 frame interval improved from **33.4 ms to 16.8 ms**; the median remained 16.7 ms. Observed completion was 8,708.9 ms before and 8,676.1 ms after, against the same 8,566 ms schedule. The longest individual frame was 166.7 ms before and 250 ms after, so occasional stalls still occur. These are local emulation measurements, not a physical iPhone/Android benchmark or an every-frame performance guarantee.
 
 Production build and six unit tests passed, including exact full-precision buffer packing. Browser checks verified the phone render, fresh/reloaded flower links returning to the note, and the unchanged stroke count and canvas dimensions. The existing replay/navigation suite also checks the revised note-first flow.
+
+## Website deployment preparation
+
+Added a GitHub Pages deployment workflow that installs the locked dependencies, runs unit tests, builds for `/4th-anniversary/`, and deploys the static `dist/` output. Image URLs respect Vite's deployment base, including the bouquet source used by the worker pipeline. Root-domain builds remain supported separately.
+
+The Pages production build and six unit tests passed. A production-preview Playwright check passed at the repository subdirectory, verifying default note routing, Snoopy loading, the compiled module worker path and the completed 280,427-stroke painting with no browser exceptions or failed asset requests.

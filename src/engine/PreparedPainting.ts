@@ -24,7 +24,7 @@ function calculateStrokes(pixels:Uint8ClampedArray):Promise<PackedStrokes> {
 export function preparePainting():Promise<PreparedPainting> {
   if(!preparation) {
     preparation=(async()=>{
-      const pixels=await loadImageField('/assets/source/bouquet.png',WIDTH,HEIGHT);
+      const pixels=await loadImageField(`${import.meta.env.BASE_URL}assets/source/bouquet.png`,WIDTH,HEIGHT);
       const strokes=await calculateStrokes(pixels);
       const brush=new BrushEngine();
       // Warm the full texture cache while the note is open. Yielding keeps the

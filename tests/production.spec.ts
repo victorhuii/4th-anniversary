@@ -1,0 +1,20 @@
+import {test,expect} from '@playwright/test';
+test('production assets and flower worker work under the repository path',async({page})=>{
+  const errors:string[]=[],failedAssets:string[]=[],workers:string[]=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('response',response=>{if(response.url().includes('/assets/')&&response.status()>=400)failedAssets.push(response.url());});
+  page.on('worker',worker=>workers.push(worker.url()));
+  await page.goto('./#flowers');
+  await expect(page.getByRole('heading',{name:'Happy four months, my love.'})).toBeVisible();
+  await expect(page).not.toHaveURL(/#flowers$/);
+  const snoopy=page.getByRole('img',{name:'Snoopy smiling and holding a colorful bunch of flowers'});
+  expect(await snoopy.evaluate(img=>(img as HTMLImageElement).naturalWidth)).toBe(736);
+  const flowers=page.getByRole('link',{name:'Flowers for you'});
+  await expect(flowers).toHaveAttribute('data-flowers-ready','true',{timeout:20000});
+  expect(workers.some(url=>url.includes('/4th-anniversary/assets/preparation.worker-'))).toBe(true);
+  await flowers.click();
+  const canvas=page.locator('canvas');
+  await expect(canvas).toHaveAttribute('data-state','complete',{timeout:15000});
+  await expect(canvas).toHaveAttribute('data-strokes','280427');
+  expect(errors).toEqual([]);expect(failedAssets).toEqual([]);
+});

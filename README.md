@@ -42,3 +42,13 @@ See [reference-analysis.md](reference-analysis.md) for timestamp observations, s
 Measured build, browser, fidelity and timing results are recorded in [verification-results.md](verification-results.md).
 
 The Thanksgiving palette, layout decisions, source research and contrast checks are documented in [design-notes.md](design-notes.md).
+
+## Live website and deployment
+
+Repository: https://github.com/victorhuii/4th-anniversary
+
+GitHub Pages URL: https://victorhuii.github.io/4th-anniversary/
+
+Pushes to `main` run the unit tests, build with Node 24, and publish `dist/` through `.github/workflows/deploy.yml`. GitHub Pages uses the GitHub Actions source. No runtime server, secrets or API keys are required by the website.
+
+`npm run build:pages` builds specifically for the `/4th-anniversary/` repository path. `npm run build` remains suitable for a root-domain static host such as Vercel or Netlify. Both image assets and the module worker respect the Vite deployment base. To preview the Pages build locally, run `npm run build:pages` followed by `npm run preview -- --base=/4th-anniversary/` and open the printed URL with `/4th-anniversary/` appended.

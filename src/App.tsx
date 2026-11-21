@@ -49,7 +49,7 @@ export default function App(){
       <header className="letter-header"><span>four months, forever thankful</span><Heart/></header>
       <div className="letter-body">
         <figure className="snoopy-portrait">
-          <div className="snoopy-image"><img src="/assets/snoopy-flowers.jpeg" width="736" height="736" alt="Snoopy smiling and holding a colorful bunch of flowers" fetchPriority="high"/></div>
+          <div className="snoopy-image"><img src={`${import.meta.env.BASE_URL}assets/snoopy-flowers.jpeg`} width="736" height="736" alt="Snoopy smiling and holding a colorful bunch of flowers" fetchPriority="high"/></div>
           <div className="pumpkin-patch" aria-hidden="true"><Pumpkin kind="sage"/><Pumpkin/><Pumpkin kind="golden"/></div>
           <figcaption>my favorite little pumpkin.</figcaption>
           <Heart className="portrait-heart"/>
